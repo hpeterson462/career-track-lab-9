@@ -34,30 +34,32 @@ describe('log-lab routes', () => {
       });
   });
 
-  // it('gets all logs', async () => {
-  //   const recipes = await Promise.all({
-  //     dateOfEvent: '9/22/20',
-  //     notes: 'Great!',
-  //     rating: 'Five stars'
-  //   },
-  //     {
-  //       dateOfEvent: '10/31/20',
-  //       notes: 'Spooky!',
-  //       rating: 'Five stars'
-  //     },
-  //     {
-  //       dateOfEvent: '12/12/20',
-  //       notes: 'Happy!',
-  //       rating: 'Five stars'
-  //     });
+  it('gets all logs', async () => {
+    const logs = await Promise.all([
+      {
+        date_of_event: '9/22/20',
+        notes: 'Great!',
+        rating: 'Five stars'
+      },
+      {
+        date_of_event: '10/31/20',
+        notes: 'Spooky!',
+        rating: 'Five stars'
+      },
+      {
+        date_of_event: '12/12/20',
+        notes: 'Happy!',
+        rating: 'Five stars'
+      }
+    ].map(log => Log.insert(log)));
 
-  //   return request(app)
-  //     .get('/api/v1/recipes')
-  //     .then(res => {
-  //       recipes.forEach(recipe => {
-  //         expect(res.body).toContainEqual(recipe);
-  //       });
-  //     });
-  // });
+    return request(app)
+      .get('/api/v1/logs')
+      .then(res => {
+        logs.forEach(log => {
+          expect(res.body).toContainEqual(log);
+        });
+      });
+  });
 
 });
