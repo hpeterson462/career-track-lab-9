@@ -6,16 +6,16 @@ const Log = require('../lib/models/log');
 const Recipe = require('../lib/models/recipe');
 
 describe('log-lab routes', () => {
-  beforeEach(() => {
-    return pool.query(fs.readFileSync('./sql/setup.sql', 'utf-8'));
-  });
-
-  it('creates a log when a recipe is used', async () => {
+  beforeEach(async () => {
+    await pool.query(fs.readFileSync('./sql/setup.sql', 'utf-8'));
     await Promise.all([
       { name: 'cookies', directions: [] },
       { name: 'cake', directions: [] },
       { name: 'pie', directions: [] }
     ].map(recipe => Recipe.insert(recipe)));
+  });
+
+  it('creates a log when a recipe is used', async () => {
     return request(app)
       .post('/api/v1/logs')
       .send({
@@ -26,6 +26,7 @@ describe('log-lab routes', () => {
       })
       .then(res => {
         expect(res.body).toEqual({
+          id: '1',
           recipe_id: '1',
           date_of_event: '9/22/20',
           notes: 'Great!',
@@ -58,6 +59,55 @@ describe('log-lab routes', () => {
       .then(res => {
         logs.forEach(log => {
           expect(res.body).toContainEqual(log);
+        });
+      });
+  });
+
+  it('gets a log by id', async () => {
+    const log = await Log.insert({
+      recipe_id: '1',
+      date_of_event: '9/22/20',
+      notes: 'Great!',
+      rating: 'Five stars'
+    });
+
+    return await request(app)
+      .get(`/api/v1/logs/${log.id}`)
+      .then(res => {
+        expect(res.body).toEqual({
+          id: '1',
+          recipe_id: '1',
+          date_of_event: '9/22/20',
+          notes: 'Great!',
+          rating: 'Five stars'
+        });
+      });
+  });
+
+  it('updates a log by id', async () => {
+    const log = await Log.insert({
+      recipe_id: '1',
+      date_of_event: '9/22/20',
+      notes: 'Great!',
+      rating: 'Five stars'
+    });
+
+    return request(app)
+      .put(`/api/v1/logs/${log.id}`)
+      .send({
+        recipe_id: '1',
+        date_of_event: '9/21/20',
+        notes: 'Boo!',
+        rating: 'One star'
+      })
+      .then(res => {
+        console.log(res.body);
+        expect(res.body).toEqual({
+          id: '1',
+          recipe_id: '1',
+          date_of_event: '9/21/20',
+          notes: 'Boo!',
+          rating: 'One star'
         });
       });
   });
