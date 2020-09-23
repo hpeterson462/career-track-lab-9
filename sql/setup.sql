@@ -9,8 +9,8 @@ CREATE TABLE recipes (
 
 CREATE TABLE logs (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  recipeId BIGINT REFERENCES recipes(id),
-  dateOfEvent TEXT NOT NULL,
+  recipe_id BIGINT REFERENCES recipes(id),
+  date_of_event TEXT NOT NULL,
   notes TEXT NOT NULL,
   rating TEXT NOT NULL
 );
