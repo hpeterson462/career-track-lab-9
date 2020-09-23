@@ -111,4 +111,18 @@ describe('log-lab routes', () => {
       });
   });
 
+  it('deletes a log by id', async () => {
+    const log = await Log.insert({
+      recipe_id: '1',
+      date_of_event: '9/22/20',
+      notes: 'Great!',
+      rating: 'Five stars'
+    });
+
+    return request(app)
+      .delete(`/api/v1/logs/${log.id}`)
+      .then(res => {
+        expect(res.body).toEqual(log);
+      });
+  });
 });
